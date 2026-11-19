@@ -1,0 +1,282 @@
+createOrReplace
+
+	expression ModelFolder = "D:\Business Analytics Working Student Job Application\03_Portfolio\delivery-performance-analytics\reports\model\" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+
+	table fact_orders
+
+		measure 'Delivered Orders' = CALCULATE(COUNTROWS(fact_orders), fact_orders[is_delivered] = TRUE())
+			formatString: #,0
+			displayFolder: KPIs
+
+		measure 'Late Orders' = CALCULATE(COUNTROWS(fact_orders), fact_orders[is_late] = TRUE())
+			formatString: #,0
+			displayFolder: KPIs
+
+		measure 'Late Rate' = DIVIDE([Late Orders], [Delivered Orders])
+			formatString: 0.0%
+			displayFolder: KPIs
+
+		measure 'On-Time Rate' = 1 - [Late Rate]
+			formatString: 0.0%
+			displayFolder: KPIs
+
+		measure 'Baseline Late Rate' = CALCULATE([Late Rate], REMOVEFILTERS())
+			formatString: 0.0%
+			displayFolder: KPIs
+
+		measure 'Late Rate CI Low' = VAR n = [Delivered Orders] VAR p = [Late Rate] VAR z = 1.959964 VAR d = 1 + z * z / n VAR c = (p + z * z / (2 * n)) / d VAR h = z * SQRT(p * (1 - p) / n + z * z / (4 * n * n)) / d RETURN IF(n > 0, c - h)
+			formatString: 0.0%
+			displayFolder: KPIs
+
+		measure 'Late Rate CI High' = VAR n = [Delivered Orders] VAR p = [Late Rate] VAR z = 1.959964 VAR d = 1 + z * z / n VAR c = (p + z * z / (2 * n)) / d VAR h = z * SQRT(p * (1 - p) / n + z * z / (4 * n * n)) / d RETURN IF(n > 0, c + h)
+			formatString: 0.0%
+			displayFolder: KPIs
+
+		measure 'Excess Late Orders' = [Late Orders] - [Delivered Orders] * [Baseline Late Rate]
+			formatString: #,0
+			displayFolder: KPIs
+
+		measure 'Above Baseline' = IF([Late Rate CI Low] > [Baseline Late Rate], "yes", "no")
+			displayFolder: KPIs
+
+		measure 'Median Lead Time (days)' = CALCULATE(MEDIAN(fact_orders[lead_time_days]), fact_orders[is_delivered] = TRUE())
+			formatString: 0.0
+			displayFolder: KPIs
+
+		measure 'Median Promised Days' = CALCULATE(MEDIAN(fact_orders[promised_days]), fact_orders[is_delivered] = TRUE())
+			formatString: 0
+			displayFolder: KPIs
+
+		measure 'P95 Lead Time (days)' = CEILING(CALCULATE(PERCENTILE.INC(fact_orders[lead_time_days], 0.95), fact_orders[is_delivered] = TRUE()), 1)
+			formatString: 0
+			displayFolder: KPIs
+
+		measure 'Promise Gap (days)' = [Median Promised Days] - [P95 Lead Time (days)]
+			formatString: 0
+			displayFolder: KPIs
+
+		measure 'Avg Delay of Late Orders (days)' = CALCULATE(AVERAGE(fact_orders[delay_days]), fact_orders[is_late] = TRUE())
+			formatString: 0.0
+			displayFolder: KPIs
+
+		measure 'Avg Review' = CALCULATE(AVERAGE(fact_orders[review_score]), fact_orders[is_delivered] = TRUE())
+			formatString: 0.00
+			displayFolder: KPIs
+
+		measure 'Avg Review On Time' = CALCULATE(AVERAGE(fact_orders[review_score]), fact_orders[is_delivered] = TRUE(), fact_orders[is_late] = FALSE())
+			formatString: 0.00
+			displayFolder: KPIs
+
+		measure 'Avg Review Late' = CALCULATE(AVERAGE(fact_orders[review_score]), fact_orders[is_late] = TRUE())
+			formatString: 0.00
+			displayFolder: KPIs
+
+		measure 'One-Star Share' = DIVIDE(CALCULATE(COUNTROWS(fact_orders), fact_orders[is_delivered] = TRUE(), fact_orders[review_score] = 1), CALCULATE(COUNT(fact_orders[review_score]), fact_orders[is_delivered] = TRUE()))
+			formatString: 0.0%
+			displayFolder: KPIs
+
+		column order_id
+			dataType: string
+			summarizeBy: none
+			sourceColumn: order_id
+
+		column order_status
+			dataType: string
+			summarizeBy: none
+			sourceColumn: order_status
+
+		column purchase_date
+			dataType: dateTime
+			formatString: yyyy-mm-dd
+			summarizeBy: none
+			sourceColumn: purchase_date
+
+		column purchase_month
+			dataType: string
+			summarizeBy: none
+			sourceColumn: purchase_month
+
+		column order_purchase_timestamp
+			dataType: dateTime
+			formatString: yyyy-mm-dd
+			summarizeBy: none
+			sourceColumn: order_purchase_timestamp
+
+		column order_delivered_customer_date
+			dataType: dateTime
+			formatString: yyyy-mm-dd
+			summarizeBy: none
+			sourceColumn: order_delivered_customer_date
+
+		column order_estimated_delivery_date
+			dataType: dateTime
+			formatString: yyyy-mm-dd
+			summarizeBy: none
+			sourceColumn: order_estimated_delivery_date
+
+		column customer_state
+			dataType: string
+			summarizeBy: none
+			sourceColumn: customer_state
+
+		column customer_region
+			dataType: string
+			summarizeBy: none
+			sourceColumn: customer_region
+
+		column seller_state
+			dataType: string
+			summarizeBy: none
+			sourceColumn: seller_state
+
+		column lane
+			dataType: string
+			summarizeBy: none
+			sourceColumn: lane
+
+		column n_items
+			dataType: int64
+			summarizeBy: none
+			sourceColumn: n_items
+
+		column n_sellers
+			dataType: int64
+			summarizeBy: none
+			sourceColumn: n_sellers
+
+		column items_value
+			dataType: double
+			summarizeBy: none
+			sourceColumn: items_value
+
+		column freight_value
+			dataType: double
+			summarizeBy: none
+			sourceColumn: freight_value
+
+		column promised_days
+			dataType: int64
+			summarizeBy: none
+			sourceColumn: promised_days
+
+		column lead_time_days
+			dataType: double
+			summarizeBy: none
+			sourceColumn: lead_time_days
+
+		column delay_days
+			dataType: int64
+			summarizeBy: none
+			sourceColumn: delay_days
+
+		column is_delivered
+			dataType: boolean
+			summarizeBy: none
+			sourceColumn: is_delivered
+
+		column is_late
+			dataType: boolean
+			summarizeBy: none
+			sourceColumn: is_late
+
+		column review_score
+			dataType: int64
+			summarizeBy: none
+			sourceColumn: review_score
+
+		column delay_band
+			dataType: string
+			summarizeBy: none
+			sourceColumn: delay_band
+			sortByColumn: delay_band_order
+
+		column delay_band_order
+			dataType: int64
+			summarizeBy: none
+			sourceColumn: delay_band_order
+
+		partition fact_orders = m
+			mode: import
+			source =
+					let
+						Source = Csv.Document(File.Contents(ModelFolder & "fact_orders.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+						Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+						Typed = Table.TransformColumnTypes(Promoted, {{"order_id", type text}, {"order_status", type text}, {"purchase_date", type date}, {"purchase_month", type text}, {"order_purchase_timestamp", type datetime}, {"order_delivered_customer_date", type datetime}, {"order_estimated_delivery_date", type date}, {"customer_state", type text}, {"customer_region", type text}, {"seller_state", type text}, {"lane", type text}, {"n_items", Int64.Type}, {"n_sellers", Int64.Type}, {"items_value", type number}, {"freight_value", type number}, {"promised_days", Int64.Type}, {"lead_time_days", type number}, {"delay_days", Int64.Type}, {"is_delivered", type logical}, {"is_late", type logical}, {"review_score", Int64.Type}}, "en-US"),
+						WithBand = Table.AddColumn(Table.AddColumn(Typed, "delay_band", each if [delay_days] = null then null else if [delay_days] <= 0 then "on time" else if [delay_days] <= 3 then "1-3 days late" else if [delay_days] <= 7 then "4-7 days late" else if [delay_days] <= 14 then "8-14 days late" else "15+ days late", type text), "delay_band_order", each if [delay_days] = null then null else if [delay_days] <= 0 then 1 else if [delay_days] <= 3 then 2 else if [delay_days] <= 7 then 3 else if [delay_days] <= 14 then 4 else 5, Int64.Type)
+					in
+						WithBand
+
+	table dim_state
+
+		column state
+			dataType: string
+			summarizeBy: none
+			sourceColumn: state
+
+		column region
+			dataType: string
+			summarizeBy: none
+			sourceColumn: region
+
+		partition dim_state = m
+			mode: import
+			source =
+					let
+						Source = Csv.Document(File.Contents(ModelFolder & "dim_state.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+						Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+						Typed = Table.TransformColumnTypes(Promoted, {{"state", type text}, {"region", type text}}, "en-US")
+					in
+						Typed
+
+	table dim_date
+
+		column date
+			dataType: dateTime
+			formatString: yyyy-mm-dd
+			summarizeBy: none
+			sourceColumn: date
+
+		column year
+			dataType: int64
+			summarizeBy: none
+			sourceColumn: year
+
+		column month
+			dataType: int64
+			summarizeBy: none
+			sourceColumn: month
+
+		column year_month
+			dataType: string
+			summarizeBy: none
+			sourceColumn: year_month
+
+		column quarter
+			dataType: string
+			summarizeBy: none
+			sourceColumn: quarter
+
+		column weekday
+			dataType: string
+			summarizeBy: none
+			sourceColumn: weekday
+
+		partition dim_date = m
+			mode: import
+			source =
+					let
+						Source = Csv.Document(File.Contents(ModelFolder & "dim_date.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+						Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+						Typed = Table.TransformColumnTypes(Promoted, {{"date", type date}, {"year", Int64.Type}, {"month", Int64.Type}, {"year_month", type text}, {"quarter", type text}, {"weekday", type text}}, "en-US")
+					in
+						Typed
+
+	relationship fact_purchase_date
+
+		fromColumn: fact_orders.purchase_date
+		toColumn: dim_date.date
+
+	relationship fact_customer_state
+
+		fromColumn: fact_orders.customer_state
+		toColumn: dim_state.state

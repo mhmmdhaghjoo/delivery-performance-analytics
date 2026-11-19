@@ -1,0 +1,18 @@
+kpi,python,dax,match
+orders_total,99441,99441,yes
+orders_delivered,96470,96470,yes
+late_orders,6534,6534,yes
+late_rate,0.0677309,0.0677309,yes
+median_lead_time_days,10.22,10.22,yes (2 dp shown)
+median_promised_days,24,24,yes
+avg_delay_days_late_orders,10.62,10.62,yes (2 dp shown)
+avg_review_on_time,4.29,4.29,yes (2 dp shown)
+avg_review_late,2.27,2.27,yes (2 dp shown)
+late_rate_state_RJ,0.1210526,0.1210526,yes
+late_rate_lane_SP_to_RJ,0.1425199,0.1425199,yes
+wilson_low_lane_SP_to_RJ,0.1350528,0.1350528,yes
+wilson_high_lane_SP_to_RJ,0.1503281,0.1503281,yes
+excess_late_orders_lane_SP_to_RJ,601.9,601.9,yes
+p95_lead_time_days_state_RJ,39,39,yes
+one_star_share_4_7_days_late,0.5858124,0.5858124,yes
+lanes_with_100_plus_orders,70,70 (+1 blank lane for multi-seller orders; excluded by a visual filter),yes

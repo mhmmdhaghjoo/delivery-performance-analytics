@@ -2,7 +2,7 @@
 
 [![ci](https://github.com/mhmmdhaghjoo/delivery-performance-analytics/actions/workflows/ci.yml/badge.svg)](https://github.com/mhmmdhaghjoo/delivery-performance-analytics/actions/workflows/ci.yml)
 
-> Status: work in progress. Milestones M1–M3 (data, validation, model, Python KPIs) are done; the Power BI dashboard (M4–M5) and the decision memo (M6) are next. Numbers below come from the current pipeline run and are provisional until the memo.
+> Status: data, validation, model, Python KPIs and the Power BI dashboard are done (M1–M5). The decision memo (M6) is next; findings below are provisional until then.
 
 **Business question:** an online marketplace promises every customer a delivery date at checkout. Is the promise kept, where and when is it broken, what does a broken promise cost in customer satisfaction, and how should the promise be recalibrated?
 
@@ -15,6 +15,18 @@
 - **Late deliveries are punished in reviews.** On-time orders average 4.3 stars and late orders 2.3. The share of one-star reviews rises from 7 % on time to 25 % at 1–3 days late and 59 % at 4–7 days late. (Association; some reviews are written before delivery.)
 - **Peaks break the promise.** The late rate reached 12 % for November 2017 orders (Black Friday) and 14 % and 19 % for February and March 2018, against 3–5 % in normal months.
 - **Calibration.** 20 of 27 states miss a 95 % on-time target with today's promise. A few northern states meet it with days to spare.
+
+## Power BI dashboard
+
+Two pages for the Head of Logistics, in [`powerbi/delivery-performance.pbix`](powerbi/delivery-performance.pbix).
+
+![Promise vs reality](powerbi/dashboard-promise-vs-reality.png)
+
+![Route and promise review](powerbi/dashboard-route-review.png)
+
+- **Model:** `fact_orders` (one row per order) with `dim_date` and `dim_state`, loaded by Power Query from the pipeline's exports. The whole semantic model, including the Power Query steps, is in [`powerbi/model.tmdl`](powerbi/model.tmdl); measures with their definitions are in [`powerbi/measures.dax`](powerbi/measures.dax); the report pages are in [`powerbi/report-definition/`](powerbi/report-definition/).
+- **Checked, not trusted:** every headline number was recomputed in DAX and compared with the Python tables. All 17 checks match ([`reports/kpi_reconciliation.csv`](reports/kpi_reconciliation.csv)).
+- **Open it:** run the pipeline first (`delivery run`), then in Power BI Desktop set the `ModelFolder` parameter (Transform data → Edit parameters) to your `reports/model/` folder and refresh.
 
 ## How it works
 

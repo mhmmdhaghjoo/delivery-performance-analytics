@@ -1,0 +1,74 @@
+// DAX measures in table fact_orders. Definitions match src/delivery/kpis.py.
+
+[Delivered Orders] =
+    CALCULATE(COUNTROWS(fact_orders), fact_orders[is_delivered] = TRUE())
+    // format: #,0
+
+[Late Orders] =
+    CALCULATE(COUNTROWS(fact_orders), fact_orders[is_late] = TRUE())
+    // format: #,0
+
+[Late Rate] =
+    DIVIDE([Late Orders], [Delivered Orders])
+    // format: 0.0%
+
+[On-Time Rate] =
+    1 - [Late Rate]
+    // format: 0.0%
+
+[Baseline Late Rate] =
+    CALCULATE([Late Rate], REMOVEFILTERS())
+    // format: 0.0%
+
+[Late Rate CI Low] =
+    VAR n = [Delivered Orders] VAR p = [Late Rate] VAR z = 1.959964 VAR d = 1 + z * z / n VAR c = (p + z * z / (2 * n)) / d VAR h = z * SQRT(p * (1 - p) / n + z * z / (4 * n * n)) / d RETURN IF(n > 0, c - h)
+    // format: 0.0%
+
+[Late Rate CI High] =
+    VAR n = [Delivered Orders] VAR p = [Late Rate] VAR z = 1.959964 VAR d = 1 + z * z / n VAR c = (p + z * z / (2 * n)) / d VAR h = z * SQRT(p * (1 - p) / n + z * z / (4 * n * n)) / d RETURN IF(n > 0, c + h)
+    // format: 0.0%
+
+[Excess Late Orders] =
+    [Late Orders] - [Delivered Orders] * [Baseline Late Rate]
+    // format: #,0
+
+[Above Baseline] =
+    IF([Late Rate CI Low] > [Baseline Late Rate], "yes", "no")
+    // format: None
+
+[Median Lead Time (days)] =
+    CALCULATE(MEDIAN(fact_orders[lead_time_days]), fact_orders[is_delivered] = TRUE())
+    // format: 0.0
+
+[Median Promised Days] =
+    CALCULATE(MEDIAN(fact_orders[promised_days]), fact_orders[is_delivered] = TRUE())
+    // format: 0
+
+[P95 Lead Time (days)] =
+    CEILING(CALCULATE(PERCENTILE.INC(fact_orders[lead_time_days], 0.95), fact_orders[is_delivered] = TRUE()), 1)
+    // format: 0
+
+[Promise Gap (days)] =
+    [Median Promised Days] - [P95 Lead Time (days)]
+    // format: 0
+
+[Avg Delay of Late Orders (days)] =
+    CALCULATE(AVERAGE(fact_orders[delay_days]), fact_orders[is_late] = TRUE())
+    // format: 0.0
+
+[Avg Review] =
+    CALCULATE(AVERAGE(fact_orders[review_score]), fact_orders[is_delivered] = TRUE())
+    // format: 0.00
+
+[Avg Review On Time] =
+    CALCULATE(AVERAGE(fact_orders[review_score]), fact_orders[is_delivered] = TRUE(), fact_orders[is_late] = FALSE())
+    // format: 0.00
+
+[Avg Review Late] =
+    CALCULATE(AVERAGE(fact_orders[review_score]), fact_orders[is_late] = TRUE())
+    // format: 0.00
+
+[One-Star Share] =
+    DIVIDE(CALCULATE(COUNTROWS(fact_orders), fact_orders[is_delivered] = TRUE(), fact_orders[review_score] = 1), CALCULATE(COUNT(fact_orders[review_score]), fact_orders[is_delivered] = TRUE()))
+    // format: 0.0%
+
