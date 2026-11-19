@@ -1,5 +1,7 @@
 # Delivery Performance Analytics
 
+[![ci](https://github.com/mhmmdhaghjoo/delivery-performance-analytics/actions/workflows/ci.yml/badge.svg)](https://github.com/mhmmdhaghjoo/delivery-performance-analytics/actions/workflows/ci.yml)
+
 > Status: work in progress. Milestones M1–M3 (data, validation, model, Python KPIs) are done; the Power BI dashboard (M4–M5) and the decision memo (M6) are next. Numbers below come from the current pipeline run and are provisional until the memo.
 
 **Business question:** an online marketplace promises every customer a delivery date at checkout. Is the promise kept, where and when is it broken, what does a broken promise cost in customer satisfaction, and how should the promise be recalibrated?
@@ -58,6 +60,14 @@ pytest -q        # 17 tests on a synthetic fixture, no download needed
 - No carrier, warehouse or cost data: the analysis shows where and when the promise fails, not why.
 - The effect of a shorter or longer promise on conversion cannot be measured here.
 - Data ends in 2018 and covers one marketplace.
+
+## Related projects
+
+- [Employee Turnover Analytics](https://github.com/mhmmdhaghjoo/employee-turnover-analytics): people analytics with survival analysis, out-of-time risk models and a fairness audit
+- [Checkout A/B Test (R)](https://github.com/mhmmdhaghjoo/checkout-ab-test-r): an A/B test from power analysis to a Bayesian rollout recommendation
+- Online shop case series: [SQL warehouse](https://github.com/mhmmdhaghjoo/online-retail-sql-warehouse), [churn pipeline](https://github.com/mhmmdhaghjoo/customer-churn-ml-pipeline), [text-to-SQL assistant](https://github.com/mhmmdhaghjoo/text-to-sql-assistant)
+
+More about me: [mhmmdhaghjoo.github.io](https://mhmmdhaghjoo.github.io)
 
 ## Licence
 
