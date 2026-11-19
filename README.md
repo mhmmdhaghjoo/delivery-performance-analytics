@@ -65,7 +65,7 @@ pytest -q        # 17 tests on a synthetic fixture, no download needed
 
 - [Employee Turnover Analytics](https://github.com/mhmmdhaghjoo/employee-turnover-analytics): people analytics with survival analysis, out-of-time risk models and a fairness audit
 - [Checkout A/B Test (R)](https://github.com/mhmmdhaghjoo/checkout-ab-test-r): an A/B test from power analysis to a Bayesian rollout recommendation
-- Online shop case series: [SQL warehouse](https://github.com/mhmmdhaghjoo/online-retail-sql-warehouse), [churn pipeline](https://github.com/mhmmdhaghjoo/customer-churn-ml-pipeline), [text-to-SQL assistant](https://github.com/mhmmdhaghjoo/text-to-sql-assistant)
+- Online shop case series: [SQL warehouse](https://github.com/mhmmdhaghjoo/online-retail-sql-warehouse) and [churn pipeline](https://github.com/mhmmdhaghjoo/customer-churn-ml-pipeline)
 
 More about me: [mhmmdhaghjoo.github.io](https://mhmmdhaghjoo.github.io)
 
