@@ -1,0 +1,10 @@
+kpi,value
+orders_total,99441.0
+orders_delivered,96470.0
+on_time_rate,0.9322690992018244
+late_rate,0.06773090079817559
+median_lead_time_days,10.217476851851853
+median_promised_days,24.0
+avg_delay_days_late_orders,10.620140801958984
+avg_review_on_time,4.290386055923885
+avg_review_late,2.270490518727472
